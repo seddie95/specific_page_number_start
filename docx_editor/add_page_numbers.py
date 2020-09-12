@@ -35,8 +35,9 @@ def add_section(parag, fmt=''):
     parag._p.append(pPr)
 
 
-def add_page_number(run):
+def add_page_number(parag, ):
     """ Add page numbers to the footer of the document"""
+    run = parag.add_run()
     fldChar1 = OxmlElement('w:fldChar')
     create_attribute(fldChar1, 'w:fldCharType', 'begin')
 
@@ -47,13 +48,21 @@ def add_page_number(run):
     fldChar2 = OxmlElement('w:fldChar')
     create_attribute(fldChar2, 'w:fldCharType', 'end')
 
+    # Center the page numbers
+    jc = OxmlElement('w:jc')
+    create_attribute(jc, 'w:val', 'center')
+    p = parag._p
+    pPr = p.get_or_add_pPr()
+    pPr.append(jc)
+
     run._r.append(fldChar1)
     run._r.append(instrText)
     run._r.append(fldChar2)
 
 
+
 # Open existing and find last paragraph before section break
-doc = Document('word_documents/steve.docx')
+doc = Document('../word_documents/steve.docx')
 
 # Set the page number type so that it starts from one
 sect = doc.sections[0]._sectPr
@@ -66,9 +75,9 @@ new_paragraph = last.insert_paragraph_before()
 add_section(new_paragraph, 'lowerRoman')
 
 # Add the page numbers
-add_page_number(doc.sections[0].footer.paragraphs[0].add_run())
+add_page_number(doc.sections[0].footer.paragraphs[0])
 
 # Save a copy of the file with the page numbers
-file_name = 'word_documents/steve_new.docx'
+file_name = '../word_documents/steve_new.docx'
 doc.save(file_name)
 os.system(f'start {file_name}')

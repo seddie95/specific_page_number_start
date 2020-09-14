@@ -22,7 +22,7 @@ def set_page_number_type(fmt='', start_num='1'):
 
 
 def add_section(parag, fmt=''):
-    """Create new section tag element"""
+    """ Create new section tag element"""
     pPr = OxmlElement('w:pPr')
     section = OxmlElement('w:sectPr')
 
@@ -62,23 +62,39 @@ def add_page_number(parag, position=''):
     run._r.append(fldChar2)
 
 
-# Open existing and find last paragraph before section break
-doc = Document('../word_documents/steve.docx')
+def set_page_size(sect1, sect2):
+    """ Ensure that both sections have the same size"""
+    sect1.page_height = sect2.page_height
+    sect1.page_width = sect2.page_width
+    sect1.left_margin = sect2.left_margin
+    sect1.right_margin = sect2.right_margin
+    sect1.top_margin = sect2.top_margin
+    sect1.bottom_margin = sect2.bottom_margin
+    sect1.header_distance = sect2.header_distance
+    sect1.footer_distance = sect2.footer_distance
 
-# Set the page number type so that it starts from one
-sect = doc.sections[0]._sectPr
-pgNumType = set_page_number_type()
-sect.append(pgNumType)
 
-# add numbers starting at i
-last = doc.paragraphs[11]
-new_paragraph = last.insert_paragraph_before()
-add_section(new_paragraph, 'lowerRoman')
+if __name__ == '__main__':
+    # Open existing and find last paragraph before section break
+    doc = Document('../word_documents/steve.docx')
 
-# Add the page numbers
-add_page_number(doc.sections[0].footer.paragraphs[0],'center')
+    # Set the page number type so that it starts from one
+    sect = doc.sections[0]._sectPr
+    pgNumType = set_page_number_type()
+    sect.append(pgNumType)
 
-# Save a copy of the file with the page numbers
-file_name = '../word_documents/steve_new.docx'
-doc.save(file_name)
-os.system(f'start {file_name}')
+    # add numbers starting at i
+    last = doc.paragraphs[77]
+    new_paragraph = last.insert_paragraph_before()
+    add_section(new_paragraph, 'lowerRoman')
+
+    # set the page to be A4
+    set_page_size(doc.sections[0], doc.sections[1])
+
+    # Add the page numbers
+    add_page_number(doc.sections[0].footer.paragraphs[0], 'center')
+
+    # Save a copy of the file with the page numbers
+    file_name = '../word_documents/steve_new.docx'
+    doc.save(file_name)
+    os.system(f'start {file_name}')
